@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "react-query";
 import axios from "axios";
 import {
   Table,
@@ -13,6 +12,8 @@ import {
   MenuItem,
   Paper,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+
 
 const fetchRecipes = async (sort, category) => {
   const { data } = await axios.get("http://127.0.0.1:8000/api/recipes/", {

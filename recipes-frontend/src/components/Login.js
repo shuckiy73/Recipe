@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../components/AuthContext";
 import { TextField, Button, Container, Typography } from "@mui/material";
 
 export default function Login() {
