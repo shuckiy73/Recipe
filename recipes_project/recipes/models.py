@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+import uuid
 
 User = get_user_model()
 
@@ -10,7 +11,7 @@ class Recipe(models.Model):
     CATEGORY_CHOICES = [
         ("Десерты", "Десерты"),
         ("Первые блюда", "Первые блюда"),
-        ("Вторые блюда", "Вторые блюда"),
+        ("Вторые блюда", "Вторые блюда"),  # Исправлена опечатка "Вторые"
         ("Напитки", "Напитки"),
         ("Закуски", "Закуски"),
         ("Салаты", "Салаты"),
@@ -77,8 +78,8 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name="Автор",
-        null=True,  # Временно разрешаем NULL
-        blank=True  # Разрешаем пустое значение в формах
+        null=True,
+        blank=True
     )
     is_published = models.BooleanField(
         default=True,
@@ -96,7 +97,12 @@ class Recipe(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            self.slug = base_slug
+            
+            # Добавляем уникальный суффикс если slug уже существует
+            while Recipe.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{uuid.uuid4().hex[:4]}"  # Используем 4 символа для краткости
         
         # Автоматическое определение категории
         if not self.category:
